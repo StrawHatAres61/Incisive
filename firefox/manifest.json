@@ -33,6 +33,10 @@
       "strict_min_version": "109.0"
     }
   },
+  "data_collection_permissions": {
+    "required": [],
+    "optional": []
+  },
   "background": { "scripts": ["background.js"] },
   "content_scripts": [{
     "matches": ["<all_urls>"],
