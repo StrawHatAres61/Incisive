@@ -3,6 +3,7 @@
 const br = typeof browser !== 'undefined' ? browser : chrome;
 
 let lastPageData = null;
+let lastTabId    = null;
 
 // Install: context menu
 br.runtime.onInstalled.addListener(() => {
@@ -28,7 +29,7 @@ br.contextMenus.onClicked.addListener((info, tab) => {
 br.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   if (msg.type === 'PAGE_DATA') {
     lastPageData = msg.data;
-    // Forward to popup if it's open — ignore errors if it's not
+    if (sender.tab) lastTabId = sender.tab.id;
     br.runtime.sendMessage({ type: 'PAGE_DATA', data: msg.data }).catch(() => {});
     return false;
   }
@@ -38,12 +39,16 @@ br.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     return false;
   }
 
-  // Popup requests a fresh parse from the active tab's content script
+  // Popup requests a fresh parse — use stored tabId, not currentWindow (popup has its own window)
   if (msg.type === 'REFRESH_PAGE_DATA') {
-    br.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      if (!tabs[0]) return;
-      br.tabs.sendMessage(tabs[0].id, { type: 'PARSE_PAGE' }).catch(() => {});
-    });
+    if (lastTabId) {
+      br.tabs.sendMessage(lastTabId, { type: 'PARSE_PAGE' }).catch(() => {});
+    } else {
+      br.tabs.query({ active: true }, (tabs) => {
+        const tab = tabs.find(t => !t.url.startsWith('chrome-extension://'));
+        if (tab) br.tabs.sendMessage(tab.id, { type: 'PARSE_PAGE' }).catch(() => {});
+      });
+    }
     return false;
   }
 });

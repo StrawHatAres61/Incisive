@@ -61,10 +61,13 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 function requestPageData() {
-  chrome.runtime.sendMessage({ type: 'GET_PAGE_DATA' }, (response) => {
-    if (chrome.runtime.lastError) return;
-    if (response?.data) autoparse(response.data);
-  });
+  // Delay so content script's PAGE_DATA message has time to reach background first
+  setTimeout(() => {
+    chrome.runtime.sendMessage({ type: 'GET_PAGE_DATA' }, (response) => {
+      if (chrome.runtime.lastError) return;
+      if (response?.data) autoparse(response.data);
+    });
+  }, 200);
 }
 
 // ── Settings load/save ─────────────────────────────────────────────────────
