@@ -96,16 +96,16 @@ function sendPageData() {
 
 // Alt+C keyboard trigger
 document.addEventListener('keydown', (e) => {
-  if (e.altKey && (e.key === 'c' || e.key === 'C')) {
-    sendPageData();
-  }
+  try {
+    if (e.altKey && (e.key === 'c' || e.key === 'C')) sendPageData();
+  } catch (_) {}
 });
 
 // Message trigger from background
 br.runtime.onMessage.addListener((msg) => {
-  if (msg.type === 'PARSE_PAGE') {
-    sendPageData();
-  }
+  try {
+    if (msg.type === 'PARSE_PAGE') sendPageData();
+  } catch (_) {}
 });
 
 } // end __incisiveLoaded guard
