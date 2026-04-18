@@ -1,40 +1,81 @@
-# Incisive — Brand Assets
+# Incisive
 
-## Files
+A browser extension for competitive debate. Open on any article, press **Alt+C**, and get a fully formatted Kankee/Verbatim card in your clipboard — author, citation, body text, and all.
 
-### Logomark (SVG)
-- mark-dark.svg              — White mark on #080808 background
-- mark-light.svg             — Black mark on #f5f5f5 background
-- mark-transparent-white.svg — White mark, transparent background
-- mark-transparent-black.svg — Black mark, transparent background
+---
 
-### Wordmark (SVG)
-- wordmark-dark.svg          — White wordmark on #080808
-- wordmark-light.svg         — Black wordmark on #f5f5f5
+## Install (Firefox)
 
-### Extension Icons (SVG + PNG)
-- icon-16.svg / icon-16.png
-- icon-32.svg / icon-32.png
-- icon-48.svg / icon-48.png
-- icon-128.svg / icon-128.png
+1. Download or clone this repo
+2. Open Firefox → `about:debugging` → **This Firefox** → **Load Temporary Add-on**
+3. Select `firefox/manifest.json`
 
-### Extension
-- manifest.json              — Manifest V3 starter with correct icon paths
+Permanent install (no developer mode required): package `firefox/` as a `.zip` and submit to [addons.mozilla.org](https://addons.mozilla.org), or sideload via `about:config` with `xpinstall.signatures.required = false`.
 
-## Color Tokens (lucasburda.com)
---bg:           #080808   Page background
---bg-card:      #111111   Cards, sections
---bg-hover:     #1a1a1a   Hover states
---border:       #222222   Borders
---border-hover: #444444   Hovered borders
---text:         #f0f0f0   Primary text
---text-muted:   #888888   Secondary text
---accent:       #d4d4d4   Active states
---white:        #ffffff   Headings
+---
 
-## Logo Geometry
-ViewBox: 0 0 80 80
-Card rect: x=12 y=14 w=56 h=44 rx=5
-Cut diagonal: BL(12,58) → TR(68,14)
-Slash: extends from (1,67) to (79,5) — past both corners
-Bottom half: rotate(6deg, pivot=BL corner 12,58)
+## Usage
+
+| Action | Result |
+|---|---|
+| **Alt+C** on any article | Opens popup, auto-parses author/title/date/URL, loads selected text into card body |
+| **Alt+C** inside popup | Re-parses the active tab and refreshes card |
+| **B** | Bold + underline (or bold only — toggle in settings) |
+| **U** | Underline |
+| **S** | Shrink to 8pt |
+| **H** | Highlight in selected color |
+| **↩** | Undo last format operation |
+| **✕ fmt** | Clear all formatting from card |
+| **✂ Cut card** | Copy card to clipboard (rich HTML + plain text) |
+| **↺** | Reset card |
+
+---
+
+## Card Format
+
+Cards are copied in Kankee/Verbatim format:
+
+```
+Tag line
+
+Begin card: LastName YY
+{} First Last, "Title," Publication, Month Day, Year URL
+
+Body text with bold, underline, shrink, and highlight formatting preserved.
+
+End card:
+```
+
+Rich HTML is copied alongside plain text so formatting survives paste into Word, Google Docs, or Verbatim.
+
+---
+
+## Settings
+
+Accessible via the **⚙** button:
+
+- **Bold + Underline** toggle — switch B between `bold+underline` and `bold` only
+- **Light mode** toggle
+- **Card text font** — Georgia (default), JetBrains Nerd Mono, Times New Roman
+
+---
+
+## Repo Structure
+
+```
+firefox/        — Firefox MV3 extension (tested on Firefox 128+)
+  manifest.json
+  background.js
+  content.js
+  popup.html
+  popup.css
+  popup.js
+  icons/
+
+mark-*.svg      — Logomark variants
+wordmark-*.svg  — Wordmark variants
+icon-*.svg      — Extension icon source files
+build.sh        — Build script (produces browser-specific zips)
+```
+
+Chrome support coming.
