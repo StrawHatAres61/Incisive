@@ -372,6 +372,17 @@ body.light #logo-pill {
   color: #000 !important;
 }
 
+/* Lighter text selection so text stays readable */
+#card-block ::selection {
+  background: rgba(120, 160, 255, 0.35);
+  color: inherit;
+}
+
+body.light #card-block ::selection {
+  background: rgba(0, 100, 255, 0.18);
+  color: inherit;
+}
+
 /* ── Toolbar ── */
 #toolbar {
   display: flex;
