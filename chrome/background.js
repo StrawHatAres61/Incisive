@@ -22,15 +22,63 @@ br.contextMenus.onClicked.addListener((info, tab) => {
   }).catch(() => {});
 });
 
-// Keyboard command: open popup immediately (preserves user gesture), then trigger parse
+// Keyboard command: capture page data (including selection) BEFORE popup opens,
+// then open popup so GET_PAGE_DATA returns fresh data with no race condition.
 br.commands.onCommand.addListener((command) => {
   if (command !== 'open-popup') return;
-  // Must call openPopup() synchronously inside the user gesture handler
-  br.action.openPopup().catch(() => {});
-  // Content script is already loaded via manifest injection — just tell it to parse
   br.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) return;
-    br.tabs.sendMessage(tabs[0].id, { type: 'PARSE_PAGE' }).catch(() => {});
+    br.scripting.executeScript({
+      target: { tabId: tabs[0].id },
+      // Runs in MAIN world — page still has focus, selection is intact
+      func: () => {
+        const get = n => { const e = document.querySelector(`meta[property="${n}"],meta[name="${n}"]`); return e ? e.getAttribute('content') : null; };
+        let author = get('article:author') || get('og:author');
+        let title  = get('og:title');
+        let pub    = get('og:site_name');
+        let date   = get('article:published_time') || get('og:updated_time');
+        // JSON-LD
+        if (!author || !title) {
+          for (const s of document.querySelectorAll('script[type="application/ld+json"]')) {
+            try {
+              const items = [].concat(JSON.parse(s.textContent));
+              for (const item of items) {
+                const t = item['@type'];
+                if (t === 'Article' || t === 'NewsArticle' || t === 'BlogPosting') {
+                  if (!title) title = item.headline;
+                  if (!date)  date  = item.datePublished;
+                  if (!pub && item.publisher) pub = item.publisher.name;
+                  if (!author) { const a = item.author; author = Array.isArray(a) ? a[0] && a[0].name : (a && (a.name || a)); }
+                  break;
+                }
+              }
+            } catch (_) {}
+          }
+        }
+        // DOM fallbacks
+        if (!title) title = document.title.replace(/\s*[|–\-]\s*.+$/, '').trim();
+        if (!author) { const e = document.querySelector('.author,[rel=author],.byline,.contributor,[itemprop=author]'); if (e) author = e.textContent.trim(); }
+        if (!date)   { const e = document.querySelector('time[datetime],.date,.published,[itemprop=datePublished]'); if (e) date = e.getAttribute('datetime') || e.textContent.trim(); }
+        if (!pub)    pub = location.hostname.replace(/^www\./, '');
+        const year   = ((date || '').match(/(\d{4})/) || [])[1] || '';
+        const tokens = (author || '').trim().split(/[\s,]+/).filter(Boolean);
+        return {
+          author:      author || '',
+          lastName:    tokens[tokens.length - 1] || '',
+          year:        year.slice(-2),
+          title:       title || '',
+          publication: pub   || '',
+          date:        date  || '',
+          url:         location.href,
+          selectedText: ((window.getSelection() || {}).toString() || '').trim()
+        };
+      }
+    }).then(results => {
+      if (results && results[0] && results[0].result) lastPageData = results[0].result;
+      br.action.openPopup().catch(() => {});
+    }).catch(() => {
+      br.action.openPopup().catch(() => {});
+    });
   });
 });
 
