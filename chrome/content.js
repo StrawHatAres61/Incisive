@@ -88,10 +88,9 @@ function parsePage() {
 function sendPageData() {
   const meta = parsePage();
   const selectedText = window.getSelection().toString().trim();
-  br.runtime.sendMessage({
-    type: 'PAGE_DATA',
-    data: { ...meta, selectedText }
-  });
+  try {
+    br.runtime.sendMessage({ type: 'PAGE_DATA', data: { ...meta, selectedText } });
+  } catch (_) {}
 }
 
 // Alt+C keyboard trigger
