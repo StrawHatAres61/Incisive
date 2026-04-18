@@ -22,21 +22,15 @@ br.contextMenus.onClicked.addListener((info, tab) => {
   }).catch(() => {});
 });
 
-// Keyboard command: inject content, then open popup
+// Keyboard command: open popup immediately (preserves user gesture), then trigger parse
 br.commands.onCommand.addListener((command) => {
   if (command !== 'open-popup') return;
+  // Must call openPopup() synchronously inside the user gesture handler
+  br.action.openPopup().catch(() => {});
+  // Content script is already loaded via manifest injection — just tell it to parse
   br.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     if (!tabs[0]) return;
-    br.scripting.executeScript({
-      target: { tabId: tabs[0].id },
-      files: ['content.js']
-    }).then(() => {
-      // Small delay so content script can fire and populate lastPageData
-      // before popup opens and requests it
-      setTimeout(() => {
-        br.action.openPopup().catch(() => {});
-      }, 80);
-    }).catch(() => {});
+    br.tabs.sendMessage(tabs[0].id, { type: 'PARSE_PAGE' }).catch(() => {});
   });
 });
 
