@@ -89,7 +89,8 @@ function sendPageData() {
   const meta = parsePage();
   const selectedText = window.getSelection().toString().trim();
   try {
-    br.runtime.sendMessage({ type: 'PAGE_DATA', data: { ...meta, selectedText } });
+    const p = br.runtime.sendMessage({ type: 'PAGE_DATA', data: { ...meta, selectedText } });
+    if (p && typeof p.catch === 'function') p.catch(() => {});
   } catch (_) {}
 }
 
