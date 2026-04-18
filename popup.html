@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Incisive</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+<div id="popup">
+
+  <!-- Header -->
+  <div id="ph">
+    <div id="ph-left">
+      <div id="logo-pill">
+        <svg width="22" height="22" viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" overflow="visible">
+          <path d="M 12 58 L 12 19 Q 12 14 17 14 L 63 14 L 68 14 Z"
+                fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          <g transform="rotate(6, 12, 58)">
+            <path d="M 68 14 L 68 53 Q 68 58 63 58 L 17 58 L 12 58 Z"
+                  fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/>
+          </g>
+          <line x1="1" y1="67" x2="79" y2="5"
+                stroke="currentColor" stroke-width="3.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <span id="wordmark">Incisive</span>
+    </div>
+    <div id="ph-right">
+      <span id="parse-st"></span>
+      <button id="settings-btn" title="Settings">⚙</button>
+    </div>
+  </div>
+
+  <!-- Settings Panel -->
+  <div id="settings">
+
+    <div id="settings-grid">
+      <!-- Bold behavior (left) -->
+      <div id="bold-section">
+        <div class="settings-label">Bold + Underline</div>
+        <div class="settings-sub">Emphasis tier</div>
+        <label class="toggle-row">
+          <input type="checkbox" id="bold-toggle" checked>
+          <span class="toggle-track"><span class="toggle-thumb"></span></span>
+          <span class="toggle-desc">B applies bold + underline</span>
+        </label>
+      </div>
+
+      <!-- Keybinds / Buttons (right) -->
+      <div id="keybinds-section">
+        <div class="settings-label">Reference</div>
+        <table id="ref-table">
+          <thead>
+            <tr><th>Keybind</th><th></th><th>Button</th><th></th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="kb-key">Alt+C</td>
+              <td class="kb-desc">Open + load</td>
+              <td class="btn-key" id="ref-b">B</td>
+              <td class="btn-desc">Bold+Underline</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="btn-key">U</td>
+              <td class="btn-desc">Underline</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="btn-key btn-s">S</td>
+              <td class="btn-desc">Shrink 8px</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="btn-key">H</td>
+              <td class="btn-desc">Highlight</td>
+            </tr>
+            <tr>
+              <td></td>
+              <td></td>
+              <td class="btn-key">↩</td>
+              <td class="btn-desc">Undo</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Theme toggle -->
+    <div id="theme-section">
+      <label class="toggle-row">
+        <input type="checkbox" id="theme-toggle">
+        <span class="toggle-track"><span class="toggle-thumb"></span></span>
+        <span class="toggle-desc">Light mode</span>
+      </label>
+    </div>
+
+    <!-- Font picker -->
+    <div id="font-section">
+      <div class="settings-label">Card text font</div>
+      <label class="font-option">
+        <input type="radio" name="card-font" value="Georgia,serif" checked>
+        <span class="font-preview" style="font-family:Georgia,serif;">Georgia</span>
+        <span class="font-sample" style="font-family:Georgia,serif;">The quick brown fox</span>
+      </label>
+      <label class="font-option">
+        <input type="radio" name="card-font" value="'JetBrainsMono Nerd Font Mono',monospace">
+        <span class="font-preview" style="font-family:'JetBrainsMono Nerd Font Mono',monospace;">JetBrains Nerd Mono</span>
+        <span class="font-sample" style="font-family:'JetBrainsMono Nerd Font Mono',monospace;">The quick brown fox</span>
+      </label>
+      <label class="font-option">
+        <input type="radio" name="card-font" value="'Times New Roman',serif">
+        <span class="font-preview" style="font-family:'Times New Roman',serif;">Times New Roman</span>
+        <span class="font-sample" style="font-family:'Times New Roman',serif;">The quick brown fox</span>
+      </label>
+    </div>
+
+  </div>
+
+  <!-- Card Section -->
+  <div id="card-sec">
+    <div id="card-sec-header">
+      <span class="sec-label">Card</span>
+      <span class="sec-hint">select body text → format</span>
+    </div>
+    <div id="card-block" contenteditable="true" spellcheck="false"><span class="c-tag" id="c-tag"></span><span class="c-begin-locked"><span class="c-author-tag" id="c-author-tag">_____ __</span><span class="c-cite-details" id="c-cite"></span></span><span class="c-body" id="c-body"></span><span class="c-end-locked">End card:</span></div>
+  </div>
+
+  <!-- Toolbar -->
+  <div id="toolbar">
+    <button class="tb-btn" id="btn-b" title="Bold (B)"><b><u>B</u></b></button>
+    <button class="tb-btn" id="btn-u" title="Underline (U)"><u>U</u></button>
+    <button class="tb-btn tb-s" id="btn-s" title="Shrink (S)">S</button>
+    <span class="tb-sep"></span>
+    <button class="tb-btn" id="btn-undo" title="Undo (↩)">↩</button>
+    <span class="tb-sep"></span>
+    <button class="tb-btn tb-clear" id="btn-clear" title="Clear formatting">✕ fmt</button>
+  </div>
+
+  <!-- Highlight Row -->
+  <div id="hl-row">
+    <span id="hl-label">HIGHLIGHT</span>
+    <button class="tb-btn" id="btn-h" title="Apply highlight (H)">H</button>
+    <span class="tb-sep"></span>
+    <span class="swatch" data-color="#FFFF00" style="background:#FFFF00;" title="Yellow"></span>
+    <span class="swatch" data-color="#00FF00" style="background:#00FF00;" title="Green"></span>
+    <span class="swatch" data-color="#FF4500" style="background:#FF4500;" title="Red-Orange"></span>
+    <span class="swatch" data-color="#00FFFF" style="background:#00FFFF;" title="Cyan"></span>
+    <span class="swatch" data-color="#FF69B4" style="background:#FF69B4;" title="Hot Pink"></span>
+    <span class="swatch" data-color="#FF8C00" style="background:#FF8C00;" title="Orange"></span>
+    <span class="swatch" data-color="#ADFF2F" style="background:#ADFF2F;" title="Yellow-Green"></span>
+  </div>
+
+  <!-- Footer -->
+  <div id="footer">
+    <button id="btn-cut">✂ Cut card</button>
+    <button id="btn-reset" title="Reset card">↺</button>
+  </div>
+
+</div>
+<script src="popup.js"></script>
+</body>
+</html>
