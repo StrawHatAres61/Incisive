@@ -586,6 +586,7 @@ function noFocusSteal(el, fn) {
 }
 
 function wireButtons() {
+  $('card-block').addEventListener('dragstart', e => e.preventDefault());
   noFocusSteal($('btn-b'),     () => applyFmt('em'));
   noFocusSteal($('btn-u'),     () => applyFmt('ul'));
   noFocusSteal($('btn-s'),     () => applyFmt('sk'));
