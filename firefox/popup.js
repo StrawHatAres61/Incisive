@@ -24,6 +24,12 @@ function pushUndo() {
 // ── DOM refs ───────────────────────────────────────────────────────────────
 const $ = id => document.getElementById(id);
 
+// ── Safe HTML setter (avoids direct innerHTML assignment on dynamic values) ─
+function safeHTML(el, html) {
+  const doc = new DOMParser().parseFromString(html, 'text/html');
+  el.replaceChildren(...Array.from(doc.body.childNodes));
+}
+
 // ── Init ───────────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
   loadSettings(() => {
@@ -139,10 +145,10 @@ function restoreCardState(cb) {
       const at   = $('c-author-tag');
       const ci   = $('c-cite');
       const body = $('c-body');
-      if (tag  && s.tagHTML   != null) tag.innerHTML  = s.tagHTML;
+      if (tag  && s.tagHTML   != null) safeHTML(tag,  s.tagHTML);
       if (at   && s.authorTag != null) { at.textContent = s.authorTag; savedState.authorTag = s.authorTag; }
       if (ci   && s.cite      != null) { ci.textContent = s.cite;      savedState.cite       = s.cite; }
-      if (body && s.bodyHTML  != null) body.innerHTML  = s.bodyHTML;
+      if (body && s.bodyHTML  != null) safeHTML(body, s.bodyHTML);
     }
     if (cb) cb();
   });
@@ -237,7 +243,7 @@ function restoreStructure() {
   const tag = document.createElement('span');
   tag.className = 'c-tag';
   tag.id = 'c-tag';
-  tag.innerHTML = tagHTML;
+  safeHTML(tag, tagHTML);
   cb.appendChild(tag);
 
   const begin = document.createElement('span');
@@ -261,7 +267,7 @@ function restoreStructure() {
   body.className = 'c-body';
   body.id = 'c-body';
   body.style.fontFamily = cardFont;
-  body.innerHTML = bodyHTML;
+  safeHTML(body, bodyHTML);
   cb.appendChild(body);
 
   const end = document.createElement('span');
@@ -442,7 +448,7 @@ function undoLast() {
   if (undoStack.length === 0) return;
   const cb = $('card-block');
   isRestoring = true;
-  cb.innerHTML = undoStack.pop();
+  safeHTML(cb, undoStack.pop());
   isRestoring = false;
   // Sync savedState from restored DOM
   const at = $('c-author-tag');
