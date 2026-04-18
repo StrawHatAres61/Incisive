@@ -22,12 +22,7 @@ br.contextMenus.onClicked.addListener((info, tab) => {
   }).catch(() => {});
 });
 
-// Keyboard command: content script's keydown fires first (same keypress, page still
-// has focus) and sends PAGE_DATA before this handler runs. Just open the popup.
-br.commands.onCommand.addListener((command) => {
-  if (command !== 'open-popup') return;
-  br.action.openPopup().catch(() => {});
-});
+// No onCommand handler needed — _execute_action in manifest opens popup natively.
 
 // Message handler
 br.runtime.onMessage.addListener((msg, sender, sendResponse) => {
